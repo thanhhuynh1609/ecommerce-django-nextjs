@@ -32,7 +32,7 @@ urlpatterns = [
     path('api/users/', include('users.urls')),
     path("api/", include("products.urls")),
     path("api/cart/", include("cart.urls")),
-    path("api/order/", include("orders.urls")),
+    path("api/orders/", include("orders.urls")),
     path("api/payment/", include("payments.urls")),
     path("api/review/", include("reviews.urls")),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
