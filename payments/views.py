@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from datetime import datetime
 from django.conf import settings
+from django.shortcuts import redirect
+
 from orders.models import Order
 from .vnpay import VNPay
 
@@ -44,26 +46,34 @@ class VNPayCreatePayment(APIView):
         })
 
 class VNPayReturnView(APIView):
+    # Không dùng IsAuthenticated vì VNPAY redirect không có token
+
     def get(self, request):
         vnp_data = request.GET.dict()
 
         vnp = VNPay()
         vnp.responseData = vnp_data.copy()
 
-        if not vnp.validate_response(settings.VNPAY_HASH_SECRET):
-            return Response({"error": "Invalid signature"}, status=400)
+        # Kiểm tra checksum
+        is_valid = vnp.validate_response(settings.VNPAY_HASH_SECRET)
 
         order_id = vnp_data.get("vnp_TxnRef")
-        response_code = vnp_data.get("vnp_ResponseCode")
+        response_code = vnp_data.get("vnp_ResponseCode")  # "00" = success
 
-        try:
-            order = Order.objects.get(id=order_id)
-        except:
-            return Response({"error": "Order not found"}, 404)
+        # Mặc định fail
+        success = "0"
 
-        if response_code == "00":
-            order.status = "COMPLETED"
-            order.save()
-            return Response({"message": "Payment success", "order_id": order_id})
+        if is_valid and response_code == "00":
+            try:
+                order = Order.objects.get(id=order_id)
+                order.status = "COMPLETED"
+                order.save()
+                success = "1"
+            except:
+                pass
 
-        return Response({"message": "Payment failed", "code": response_code})
+        # FE URL
+        fe_url = f"http://localhost:3000/payment-return?order={order_id}&success={success}"
+
+        # Redirect sang FE
+        return redirect(fe_url)
