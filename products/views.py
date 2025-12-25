@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Category, Product, ProductImage
-from .serializers import CategorySerializer, ProductImageSerializer, ProductSerializer
+from .serializers import CategorySerializer, ProductImageSerializer, ProductListSerializer, ProductDetailSerializer
 from rest_framework.permissions import IsAdminUser
 
 # Create your views here.
@@ -77,12 +77,12 @@ class ProductListCreateView(APIView):
         if category:
             products = products.filter(category_id = category)
             
-        serializer = ProductSerializer(products, many=True)
+        serializer = ProductListSerializer(products, many=True)
         return Response(serializer.data)
     
     def post(self, request):
         product_data = request.data
-        serializer = ProductSerializer(data=product_data)
+        serializer = ProductListSerializer(data=product_data)
         
         if serializer.is_valid():
             product = serializer.save()
@@ -104,7 +104,7 @@ class CategoryProductsView(APIView):
             return Response({"error": "Category not found"}, status=404)
 
         products = Product.objects.filter(category=category, is_active=True)
-        serializer = ProductSerializer(products, many=True)
+        serializer = ProductListSerializer(products, many=True)
 
         return Response({
             "category": category.name,
@@ -121,7 +121,7 @@ class ProductDetailView(APIView):
     
     def get_product(self, pk):
         try:
-            return Product.objects.get(pk=pk)
+            return Product.objects.prefetch_related('reviews__user').get(pk=pk)
         except:
             return None;
     
@@ -129,14 +129,14 @@ class ProductDetailView(APIView):
         product = self.get_product(pk)
         if not product:
             return Response({"error": "Not found!"}, status=404)
-        return Response(ProductSerializer(product).data)
+        return Response(ProductDetailSerializer(product).data)
     
     def put(self, request, pk):
         product = self.get_product(pk)
         if not product:
             return Response({"error": "Not found!"}, status=404)
         
-        serializer = ProductSerializer(product, data=request.data, partial=True)
+        serializer = ProductDetailSerializer(product, data=request.data, partial=True)
         if serializer.is_valid():
             product = serializer.save()
             
@@ -144,7 +144,7 @@ class ProductDetailView(APIView):
                 ProductImage.objects.filter(product=product).delete()
                 for img in request.FILES.getlist("images"):
                     ProductImage.objects.create(product=product, image=img)
-            return Response(ProductSerializer(product).data)        
+            return Response(ProductDetailSerializer(product).data)        
         return Response(serializer.errors, status=400)
     
     def delete(self, request, pk):

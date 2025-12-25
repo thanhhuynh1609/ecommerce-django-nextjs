@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Category, Product, ProductImage
-
+from reviews.serializer import ReviewSerializer
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -12,9 +12,23 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = ["id", "image"]
         
         
-class ProductSerializer(serializers.ModelSerializer):
+class ProductListSerializer(serializers.ModelSerializer):
+    category_name = serializers.CharField(source="category.name", read_only=True)
+
+    class Meta:
+        model = Product
+        fields = [
+            "id", "name", "slug",
+            "price", "thumbnail",
+            "category", "category_name",
+        ]
+
+
+class ProductDetailSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
-    category_name = serializers.CharField(source = "category.name", read_only=True)
+    reviews = ReviewSerializer(many=True, read_only=True)
+    category_name = serializers.CharField(source="category.name", read_only=True)
+
     class Meta:
         model = Product
         fields = [
@@ -22,5 +36,6 @@ class ProductSerializer(serializers.ModelSerializer):
             "price", "stock",
             "category", "category_name",
             "thumbnail", "images",
-            "is_active", "created_at"
+            "is_active", "created_at",
+            "reviews"
         ]
