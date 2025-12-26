@@ -7,8 +7,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import status
-
-from orders.models import Order, OrderItem
+from users.models import User
+from products.models import Product
+from orders.models import Order
 from orders.serializers import OrderSerializer
 from users.models import Address
 from cart.models import Cart
@@ -132,3 +133,12 @@ class UpdateOrderStatusView(APIView):
         order.save()
         return Response({"message" : "success update status order!"})
         
+class AdminDashboard(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        return Response({
+            "user_count": User.objects.count(),
+            "product_count": Product.objects.count(),
+            "order_count": Order.objects.count(),
+        })

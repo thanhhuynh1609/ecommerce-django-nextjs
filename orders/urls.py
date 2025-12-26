@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CheckoutView, MyOrderView, OrderDetailView, CancleOrderView, AdminOrderView, UpdateOrderStatusView
+from .views import CheckoutView, MyOrderView, OrderDetailView, CancleOrderView, AdminOrderView, UpdateOrderStatusView, AdminDashboard
 
 urlpatterns = [
     
@@ -8,6 +8,7 @@ urlpatterns = [
     path("checkout/", CheckoutView.as_view()),
     path("my-orders/", MyOrderView.as_view()),
     path("<int:order_id>/",OrderDetailView.as_view() ),
-    path("<int:order_id>/cancel/",CancleOrderView.as_view() )
-    
+    path("<int:order_id>/cancel/",CancleOrderView.as_view() ),
+    path("dashboard/", AdminDashboard.as_view())
+
 ]

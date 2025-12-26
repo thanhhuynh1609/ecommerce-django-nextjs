@@ -2,10 +2,11 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAdminUser
 from .serializers import RegisterSerializer, LoginSerializer, UserSerializer, UpdateUserSerializer, AddressSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from .models import Address
+from .models import Address, User
 from rest_framework.parsers import MultiPartParser, FormParser
 
 
@@ -132,3 +133,12 @@ class AddressDetailView(APIView):
 
         address.delete()
         return Response({"message": "Address deleted"}, status=204)
+
+
+class AdminUserList(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        users = User.objects.all()
+        data = [{"id": u.id, "username": u.full_name, "email": u.email, "is_staff": u.is_staff} for u in users]
+        return Response(data)

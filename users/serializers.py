@@ -36,7 +36,26 @@ class LoginSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id','email', 'full_name', 'phone', 'avatar', 'is_customer', 'is_seller']
+        fields = ['id','email', 'full_name', 'phone', 'avatar', 'is_customer', 'is_seller', 'is_staff']
+class AdminUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id','email', 'password', 'full_name', 'phone', 'avatar', 'is_customer', 'is_seller', 'is_staff']
+        extra_kwargs = {
+            'password': {'write_only': True, 'required': False} 
+        }
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop('password', None)
+        
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        
+        if password:
+            instance.set_password(password)
+            
+        instance.save()
+        return instance
 
 class UpdateUserSerializer(serializers.ModelSerializer):
     class Meta:
