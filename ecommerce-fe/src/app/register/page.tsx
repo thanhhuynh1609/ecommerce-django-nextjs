@@ -30,33 +30,33 @@ export default function RegisterPage() {
     }
   };
   return (
-    <div className="p-8 max-w-md mx-auto">
-      <h1 className="text-2xl mb-4 font-bold">Register</h1>
+    <div className="p-8 max-w-md mx-auto mt-6 mb-6 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-2xl">
+      <h1 className="text-2xl mb-4 font-bold">Đăng ký</h1>
 
       <form onSubmit={handleRegister} className="flex flex-col gap-4">
         <input
-          placeholder="Full name"
+          placeholder="usename"
           value={fullName}
-          className="border p-2"
+          className="border p-2 rounded"
           onChange={(e) => setFullName(e.target.value)}
         />
         <input
           placeholder="Email"
           value={email}
-          className="border p-2"
+          className="border p-2 rounded"
           onChange={(e) => setEmail(e.target.value)}
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Mật khẩu"
           value={password}
-          className="border p-2"
+          className="border p-2 rounded"
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button className="bg-black text-white p-2 rounded">Register</button>
+        <button className="bg-black text-white p-2 rounded">Đăng kí</button>
         <p className="text-sm text-red-500">{message}</p>
       </form>
-      <Link href={"/login"}>Login</Link>
+      <Link href={"/login"}>Đăng nhập</Link>
     </div>
   );
 }

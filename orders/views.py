@@ -112,26 +112,60 @@ class CancleOrderView(APIView):
 class AdminOrderView(APIView):
     permission_classes = [IsAdminUser]
     
-    def get (self, request):
-        orders = Order.objects.all()
+    def get(self, request):
+        status_filter = request.GET.get("status")
+        user_id = request.GET.get("user")
+        
+        orders = Order.objects.all().order_by("-created_at")
+
+        if status_filter:
+            orders = orders.filter(status=status_filter)
+
+        if user_id:
+            orders = orders.filter(user_id=user_id)
+
         serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data)
-        
-class UpdateOrderStatusView(APIView):
+    
+class AdminOrderDetailView(APIView):
     permission_classes = [IsAdminUser]
-    def put(self, request, order_id):
-        new_status = request.data.get("status")
-        if new_status not in ["PENDING", "CONFIRMED", "SHIPPING", "COMPLETED", "CANCELLED"]:
-            return Response({"error": "Invalid status"}, status=400)
-        
+
+    def get(self, request, order_id):
         try:
             order = Order.objects.get(id=order_id)
-        except:
-            return Response({"error":"Order not found!"}, status=404)
+        except Order.DoesNotExist:
+            return Response({"error": "Order not found"}, status=404)
+
+        serializer = OrderSerializer(order)
+        return Response(serializer.data)
         
+ALLOWED_FLOW = {
+    "PENDING": ["CONFIRMED", "CANCELLED"],
+    "CONFIRMED": ["SHIPPING", "CANCELLED"],
+    "SHIPPING": ["COMPLETED"],
+    "COMPLETED": [],
+    "CANCELLED": [],
+}
+
+class UpdateOrderStatusView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def put(self, request, order_id):
+        new_status = request.data.get("status")
+
+        try:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
+            return Response({"error":"Order not found!"}, status=404)
+
+        if new_status not in ALLOWED_FLOW.get(order.status, []):
+            return Response({"error": f"Cannot change from {order.status} to {new_status}"}, status=400)
+
         order.status = new_status
         order.save()
-        return Response({"message" : "success update status order!"})
+
+        return Response({"message": "Status updated successfully"})
+
         
 class AdminDashboard(APIView):
     permission_classes = [IsAdminUser]

@@ -33,8 +33,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="p-8 max-w-md mx-auto">
-      <h1 className="text-2xl mb-4 font-bold">Login</h1>
+    <div className="p-8 max-w-md mx-auto mt-6 mb-6 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-2xl" >
+      <h1 className="text-2xl mb-4 font-bold">Đăng nhập</h1>
 
       <form onSubmit={handleLogin} className="flex flex-col gap-4">
         <input
@@ -45,18 +45,18 @@ export default function LoginPage() {
         />
 
         <input
-          placeholder="Password"
+          placeholder="Mật khẩu"
           type="password"
           className="border p-2"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button className="bg-black text-white p-2 rounded">Login</button>
+        <button className="bg-black text-white p-2 rounded">Đăng nhập</button>
 
         <p className="text-sm text-red-500">{message}</p>
       </form>
-      <Link href={"/register"}>Register</Link>
+      <Link href={"/register"}>Đăng ký</Link>
     </div>
   );
 }
