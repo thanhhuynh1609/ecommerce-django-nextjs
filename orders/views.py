@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import status
 from users.models import User
 from products.models import Product
-from orders.models import Order
+from orders.models import Order, OrderItem
 from orders.serializers import OrderSerializer
 from users.models import Address
 from cart.models import Cart
