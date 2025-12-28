@@ -43,7 +43,7 @@ export default function AdminProductList() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Quản lý sản phẩ m</h1>
+      <h1 className="text-2xl font-bold mb-4">Quản lý sản phẩm</h1>
 
       <Link
         href="/admin/products/create"
