@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { api, BACKEND_URL } from "@/src/lib/api";
 import { useRouter } from "next/navigation";
+import AddressSelector from "@/src/components/AddressSelector/AddressSelector";
 
 export default function CheckoutPage() {
   const [addresses, setAddresses] = useState<any[]>([]);

@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'orders',
     'payments',
     'reviews',
+    'addressvn',
     'rest_framework',
     'drf_spectacular',
 ]

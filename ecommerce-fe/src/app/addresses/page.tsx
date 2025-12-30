@@ -86,8 +86,7 @@ export default function AddressListPage() {
                   </div>
                   <p className="text-gray-500 text-sm font-medium">{addr.phone}</p>
                   <p className="text-gray-600 text-sm leading-relaxed pt-2">
-                    {addr.street}<br />
-                    {addr.district}, {addr.city}
+                    {addr.street},{addr.ward}, {addr.city}
                   </p>
                 </div>
               </div>
